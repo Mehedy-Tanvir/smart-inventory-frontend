@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import api from "../../services/api";
+import { useNavigate } from "react-router-dom";
 
 interface SignupPayload {
   name: string;
@@ -8,6 +9,7 @@ interface SignupPayload {
 }
 
 export const useSignup = () => {
+  const navigate = useNavigate();
   return useMutation({
     mutationFn: async (data: SignupPayload) => {
       const res = await api.post("/auth/signup", data);
@@ -16,6 +18,7 @@ export const useSignup = () => {
 
     onSuccess: (data) => {
       console.log("Signup success:", data);
+      navigate("/login");
     },
 
     onError: (error: any) => {
