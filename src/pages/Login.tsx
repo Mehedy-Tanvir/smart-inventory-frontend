@@ -1,8 +1,10 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useLogin } from "../features/auth/useLogin";
 
 export default function Login() {
   const { mutate: login, isPending } = useLogin();
+  const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,7 +21,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen  flex items-start sm:items-center justify-center bg-gray-100 px-4 pt-16 sm:pt-0">
+    <div className="min-h-screen flex items-start sm:items-center justify-center bg-gray-100 px-4 pt-16 sm:pt-0">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-6 sm:p-8 mt-6 mb-6 sm:mt-0">
         {/* Header */}
         <div className="text-center mb-6">
@@ -62,17 +64,15 @@ export default function Login() {
             type="submit"
             disabled={isPending || !email || !password}
             className={`
-    w-full py-2.5 rounded-lg font-medium text-white
-    transition-all duration-200
-
-    ${
-      isPending || !email || !password
-        ? "bg-gray-400 cursor-not-allowed"
-        : "bg-black hover:bg-gray-900 hover:shadow-md hover:-translate-y-[1px] cursor-pointer"
-    }
-
-    active:scale-[0.98]
-  `}
+              w-full py-2.5 rounded-lg font-medium text-white
+              transition-all duration-200
+              ${
+                isPending || !email || !password
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-black hover:bg-gray-900 hover:shadow-md hover:-translate-y-[1px] cursor-pointer"
+              }
+              active:scale-[0.98]
+            `}
           >
             {isPending ? "Logging in..." : "Login"}
           </button>
@@ -95,6 +95,22 @@ export default function Login() {
         >
           Use Demo Account
         </button>
+
+        {/* Register Section */}
+        <div className="mt-6 text-center">
+          <p className="text-sm text-gray-500">Don’t have an account?</p>
+
+          <button
+            onClick={() => navigate("/register")}
+            className="mt-2 w-full py-2.5 rounded-lg font-medium 
+            border border-black text-black
+            transition-all duration-200
+            hover:bg-black hover:text-white hover:shadow-md hover:-translate-y-[1px]
+            active:scale-[0.98]"
+          >
+            Create Account
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useCategories } from "../features/category/useCategories";
 import { useProducts } from "../features/product/useProducts";
@@ -8,7 +8,6 @@ export default function Products() {
   const { products, createProduct } = useProducts();
 
   const [categoryName, setCategoryName] = useState("");
-
   const [productForm, setProductForm] = useState({
     name: "",
     categoryId: "",
@@ -17,15 +16,40 @@ export default function Products() {
     minStock: "",
   });
 
-  // Pagination state
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5; // adjust as needed
-  const totalPages = Math.ceil(products.length / itemsPerPage);
+  // SEARCH & FILTER STATE
+  const [search, setSearch] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
 
-  const paginatedProducts = products.slice(
+  // PAGINATION STATE
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
+  // FILTERED PRODUCTS
+  const filteredProducts = products.filter((p: any) => {
+    const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase());
+    const matchesCategory = selectedCategory
+      ? p.categoryId === selectedCategory
+      : true;
+    const matchesStatus = statusFilter
+      ? statusFilter === "out"
+        ? p.status === "Out of Stock"
+        : p.status !== "Out of Stock"
+      : true;
+    return matchesSearch && matchesCategory && matchesStatus;
+  });
+
+  // PAGINATION
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  const paginatedProducts = filteredProducts.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage,
   );
+
+  // RESET PAGE WHEN FILTERS CHANGE
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, selectedCategory, statusFilter]);
 
   const handleCreateCategory = async () => {
     if (!categoryName.trim()) {
@@ -168,11 +192,47 @@ export default function Products() {
         </div>
       </div>
 
+      {/* SEARCH & FILTER */}
+      <div className="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
+        <input
+          type="text"
+          placeholder="Search products..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="input-modern w-full md:w-1/3"
+        />
+
+        <div className="flex gap-3 w-full md:w-auto">
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="input-modern w-full"
+          >
+            <option value="">All Categories</option>
+            {categories.map((cat: any) => (
+              <option key={cat._id} value={cat._id}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
+
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="input-modern w-full"
+          >
+            <option value="">All Status</option>
+            <option value="active">Active</option>
+            <option value="out">Out of Stock</option>
+          </select>
+        </div>
+      </div>
+
       {/* PRODUCT LIST */}
       <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
         <div className="p-4 sm:p-5 border-b">
           <h2 className="font-semibold text-gray-700 text-sm sm:text-base">
-            Product List
+            Product List ({filteredProducts.length})
           </h2>
         </div>
 
@@ -190,25 +250,33 @@ export default function Products() {
             </thead>
 
             <tbody>
-              {paginatedProducts.map((p: any) => (
-                <tr key={p._id} className="border-t hover:bg-gray-50">
-                  <td className="px-5 py-3 font-medium">{p.name}</td>
-                  <td className="px-5 py-3">{p.categoryName || "N/A"}</td>
-                  <td className="px-5 py-3">${p.price}</td>
-                  <td className="px-5 py-3">{p.stock}</td>
-                  <td className="px-5 py-3">
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs ${
-                        p.status === "Out of Stock"
-                          ? "bg-red-100 text-red-600"
-                          : "bg-green-100 text-green-600"
-                      }`}
-                    >
-                      {p.status || "Active"}
-                    </span>
+              {paginatedProducts.length > 0 ? (
+                paginatedProducts.map((p: any) => (
+                  <tr key={p._id} className="border-t hover:bg-gray-50">
+                    <td className="px-5 py-3 font-medium">{p.name}</td>
+                    <td className="px-5 py-3">{p.categoryName || "N/A"}</td>
+                    <td className="px-5 py-3">${p.price}</td>
+                    <td className="px-5 py-3">{p.stock}</td>
+                    <td className="px-5 py-3">
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs ${
+                          p.status === "Out of Stock"
+                            ? "bg-red-100 text-red-600"
+                            : "bg-green-100 text-green-600"
+                        }`}
+                      >
+                        {p.status || "Active"}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={5} className="text-center py-6 text-gray-400">
+                    No products match your filters
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
@@ -241,7 +309,7 @@ export default function Products() {
             ))
           ) : (
             <p className="text-center py-6 text-gray-400">
-              No products available
+              No products match your filters
             </p>
           )}
         </div>
@@ -256,10 +324,10 @@ export default function Products() {
             Prev
           </button>
           <span>
-            Page {currentPage} of {totalPages}
+            Page {currentPage} of {totalPages || 1}
           </span>
           <button
-            disabled={currentPage === totalPages}
+            disabled={currentPage === totalPages || totalPages === 0}
             onClick={() => setCurrentPage((prev) => prev + 1)}
             className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
           >
