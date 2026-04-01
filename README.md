@@ -1,73 +1,87 @@
-# React + TypeScript + Vite
+# Smart Inventory & Order Management System (Frontend)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A web application frontend for managing products, stock levels, customer orders, and fulfillment workflows. Built with React, TypeScript, and Tailwind CSS, it interacts with a Node.js/Express backend to provide a seamless inventory management experience.
 
-Currently, two official plugins are available:
+## Live Demo
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+[View Live Application](https://your-frontend-vercel-link.vercel.app)
 
-## React Compiler
+## Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Authentication**
+  - Signup and Login with email and password
+  - Demo login with pre-filled credentials
+  - Redirect to Dashboard upon login
 
-## Expanding the ESLint configuration
+- **Product & Category Management**
+  - Create and view product categories
+  - Add products with details:
+    - Name, Category, Price, Stock Quantity, Minimum Stock Threshold, Status (Active / Out of Stock)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Order Management**
+  - Create, update, cancel, and view orders
+  - Auto-calculation of total price
+  - Order statuses: Pending, Confirmed, Shipped, Delivered, Cancelled
+  - Conflict detection for duplicate or inactive products
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- **Stock & Restock**
+  - Automatic stock deduction on confirmed orders
+  - Automatic addition to Restock Queue when stock is low
+  - Priority-based queue (High / Medium / Low)
+  - Manual stock update and removal from queue
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- **Dashboard & Analytics**
+  - Overview of total orders today, revenue, pending vs completed orders
+  - Low stock items summary
+  - Simple analytics charts
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- **Activity Log**
+  - Tracks recent system actions (latest 5–10)
+  - Example: Order creation, stock updates, restock queue actions
+
+- **Search, Filter & Pagination**
+  - Search and filter products or orders
+  - Pagination for large datasets
+
+## Tech Stack
+
+- **Frontend:** React, TypeScript, Tailwind CSS, React Router, React Query, Zustand
+- **Backend:** Node.js, Express, MongoDB, Mongoose, JWT Authentication, Zod Validation
+
+## Getting Started
+
+### Clone the Repository
+
+```bash
+git clone https://github.com/your-username/mern-inventory-frontend.git
+cd mern-inventory-frontend
+
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Install Dependencies
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+# or
+yarn install
 ```
+
+### Run Locally
+
+```bash
+npm run dev
+# or
+yarn dev
+```
+
+The app will run on http://localhost:5173 by default.
+
+### Environment Variables
+
+Create a .env file in the root directory with the following variables:
+
+```
+VITE_API_URL=https://your-backend.vercel.app
+```
+
+Replace the URL with your deployed backend API endpoint.
