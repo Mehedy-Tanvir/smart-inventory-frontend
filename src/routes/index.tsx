@@ -1,35 +1,45 @@
 import { createBrowserRouter } from "react-router-dom";
-
 import Login from "../pages/Login";
+import Signup from "../pages/Register";
 import Dashboard from "../pages/Dashboard";
 import Products from "../pages/Products";
 import Orders from "../pages/Orders";
 import Restock from "../pages/Restock";
-import Signup from "../pages/Register";
+import Layout from "../components/Layout";
 
 export const router = createBrowserRouter([
-  {
-    path: "/register",
-    element: <Signup />,
-  },
-  {
-    path: "/login",
-    element: <Login />,
-  },
+  { path: "/register", element: <Signup /> },
+  { path: "/login", element: <Login /> },
   {
     path: "/",
-    element: <Dashboard />,
+    element: (
+      <Layout>
+        <Dashboard />
+      </Layout>
+    ),
   },
   {
     path: "/products",
-    element: <Products />,
+    element: (
+      <Layout>
+        <Products />
+      </Layout>
+    ),
   },
   {
     path: "/orders",
-    element: <Orders />,
+    element: (
+      <Layout>
+        <Orders />
+      </Layout>
+    ),
   },
   {
     path: "/restock",
-    element: <Restock />,
+    element: (
+      <Layout>
+        <Restock />
+      </Layout>
+    ),
   },
 ]);
