@@ -85,3 +85,30 @@ VITE_API_URL=https://your-backend.vercel.app
 ```
 
 Replace the URL with your deployed backend API endpoint.
+
+## Backend Repository
+
+The frontend communicates with the backend repository here:
+
+Smart Inventory Backend
+
+### Backend Overview
+
+APIs
+/auth → Signup, Login
+/products → CRUD operations for products
+/categories → CRUD operations for categories
+/orders → Create, update, cancel orders
+/restock → Manage restock queue
+/dashboard → Fetch dashboard metrics
+/activity → Fetch activity logs
+Business Logic
+Stock deduction only on confirmed orders
+Prevent duplicate products in order
+Auto update product status and restock queue
+
+## Deployment
+
+Frontend: Netlify
+Backend: Vercel
+Database: MongoDB Atlas
