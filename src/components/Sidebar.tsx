@@ -8,6 +8,7 @@ import {
   FiBox,
   FiClipboard,
   FiRefreshCw,
+  FiActivity,
 } from "react-icons/fi";
 
 const menuItems = [
@@ -15,6 +16,7 @@ const menuItems = [
   { label: "Products & Categories", icon: <FiBox />, path: "/products" },
   { label: "Orders", icon: <FiClipboard />, path: "/orders" },
   { label: "Restock", icon: <FiRefreshCw />, path: "/restock" },
+  { label: "Activity Log", icon: <FiActivity />, path: "/activity" },
 ];
 
 export default function Sidebar() {

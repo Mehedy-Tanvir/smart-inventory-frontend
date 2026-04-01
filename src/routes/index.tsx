@@ -6,6 +6,7 @@ import Products from "../pages/Products";
 import Orders from "../pages/Orders";
 import Restock from "../pages/Restock";
 import Layout from "../components/Layout";
+import ActivityLog from "../pages/ActivityLog";
 
 export const router = createBrowserRouter([
   { path: "/register", element: <Signup /> },
@@ -39,6 +40,22 @@ export const router = createBrowserRouter([
     element: (
       <Layout>
         <Restock />
+      </Layout>
+    ),
+  },
+  {
+    path: "/restock",
+    element: (
+      <Layout>
+        <Restock />
+      </Layout>
+    ),
+  },
+  {
+    path: "/activity",
+    element: (
+      <Layout>
+        <ActivityLog />
       </Layout>
     ),
   },
