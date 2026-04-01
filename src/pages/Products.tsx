@@ -17,6 +17,16 @@ export default function Products() {
     minStock: "",
   });
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5; // adjust as needed
+  const totalPages = Math.ceil(products.length / itemsPerPage);
+
+  const paginatedProducts = products.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage,
+  );
+
   const handleCreateCategory = async () => {
     if (!categoryName.trim()) {
       toast.error("Category name is required");
@@ -74,19 +84,17 @@ export default function Products() {
 
       {/* FORMS */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-        {/* CATEGORY */}
+        {/* CATEGORY FORM */}
         <div className="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border">
           <h2 className="font-semibold text-gray-700 mb-3 text-sm sm:text-base">
             Create Category
           </h2>
-
           <input
             className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-black outline-none"
             placeholder="Category Name"
             value={categoryName}
             onChange={(e) => setCategoryName(e.target.value)}
           />
-
           <button
             onClick={handleCreateCategory}
             className="mt-3 w-full bg-black text-white py-2 rounded-lg text-sm hover:bg-gray-800 transition"
@@ -95,12 +103,11 @@ export default function Products() {
           </button>
         </div>
 
-        {/* PRODUCT */}
+        {/* PRODUCT FORM */}
         <div className="lg:col-span-2 bg-white p-4 sm:p-5 rounded-2xl shadow-sm border">
           <h2 className="font-semibold text-gray-700 mb-4 text-sm sm:text-base">
             Add Product
           </h2>
-
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <input
               className="input-modern"
@@ -110,15 +117,11 @@ export default function Products() {
                 setProductForm({ ...productForm, name: e.target.value })
               }
             />
-
             <select
               className="input-modern"
               value={productForm.categoryId}
               onChange={(e) =>
-                setProductForm({
-                  ...productForm,
-                  categoryId: e.target.value,
-                })
+                setProductForm({ ...productForm, categoryId: e.target.value })
               }
             >
               <option value="">Select Category</option>
@@ -128,7 +131,6 @@ export default function Products() {
                 </option>
               ))}
             </select>
-
             <input
               type="number"
               className="input-modern"
@@ -138,7 +140,6 @@ export default function Products() {
                 setProductForm({ ...productForm, price: e.target.value })
               }
             />
-
             <input
               type="number"
               className="input-modern"
@@ -148,7 +149,6 @@ export default function Products() {
                 setProductForm({ ...productForm, stock: e.target.value })
               }
             />
-
             <input
               type="number"
               className="input-modern sm:col-span-2"
@@ -159,7 +159,6 @@ export default function Products() {
               }
             />
           </div>
-
           <button
             onClick={handleCreateProduct}
             className="mt-4 w-full sm:w-auto bg-black text-white px-5 py-2 rounded-lg text-sm hover:bg-gray-800 transition"
@@ -169,7 +168,7 @@ export default function Products() {
         </div>
       </div>
 
-      {/* TABLE / MOBILE LIST */}
+      {/* PRODUCT LIST */}
       <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
         <div className="p-4 sm:p-5 border-b">
           <h2 className="font-semibold text-gray-700 text-sm sm:text-base">
@@ -191,7 +190,7 @@ export default function Products() {
             </thead>
 
             <tbody>
-              {products.map((p: any) => (
+              {paginatedProducts.map((p: any) => (
                 <tr key={p._id} className="border-t hover:bg-gray-50">
                   <td className="px-5 py-3 font-medium">{p.name}</td>
                   <td className="px-5 py-3">{p.categoryName || "N/A"}</td>
@@ -216,21 +215,18 @@ export default function Products() {
 
         {/* MOBILE CARDS */}
         <div className="md:hidden divide-y">
-          {products.length > 0 ? (
-            products.map((p: any) => (
+          {paginatedProducts.length > 0 ? (
+            paginatedProducts.map((p: any) => (
               <div key={p._id} className="p-4 space-y-2">
                 <div className="flex justify-between">
                   <h3 className="font-medium text-gray-800">{p.name}</h3>
                   <span className="text-sm font-semibold">${p.price}</span>
                 </div>
-
                 <p className="text-xs text-gray-500">
                   {p.categoryName || "No category"}
                 </p>
-
                 <div className="flex justify-between items-center text-sm">
                   <span>Stock: {p.stock}</span>
-
                   <span
                     className={`px-2 py-1 rounded-full text-xs ${
                       p.status === "Out of Stock"
@@ -248,6 +244,27 @@ export default function Products() {
               No products available
             </p>
           )}
+        </div>
+
+        {/* PAGINATION CONTROLS */}
+        <div className="flex justify-center items-center space-x-3 py-4 border-t">
+          <button
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage((prev) => prev - 1)}
+            className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+          >
+            Prev
+          </button>
+          <span>
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage((prev) => prev + 1)}
+            className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+          >
+            Next
+          </button>
         </div>
       </div>
     </div>
