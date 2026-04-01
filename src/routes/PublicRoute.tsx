@@ -1,3 +1,4 @@
+import type { JSX } from "react";
 import { Navigate } from "react-router-dom";
 
 export default function PublicRoute({ children }: { children: JSX.Element }) {
