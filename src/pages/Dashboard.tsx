@@ -5,10 +5,18 @@ import {
   FaExclamationTriangle,
   FaClock,
 } from "react-icons/fa";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 export default function Dashboard() {
   const { data, isLoading } = useDashboard();
-
   const dashboard = data?.data;
 
   if (isLoading) {
@@ -27,9 +35,7 @@ export default function Dashboard() {
     );
   }
 
-  const formatCurrency = (amount: number) => {
-    return `৳ ${amount.toLocaleString()}`;
-  };
+  const formatCurrency = (amount: number) => `৳ ${amount.toLocaleString()}`;
 
   const cards = [
     {
@@ -62,6 +68,17 @@ export default function Dashboard() {
     },
   ];
 
+  // Sample data for chart (replace with real API data if available)
+  const chartData = [
+    { name: "Mon", orders: 5, revenue: 1200 },
+    { name: "Tue", orders: 8, revenue: 2500 },
+    { name: "Wed", orders: 3, revenue: 900 },
+    { name: "Thu", orders: 10, revenue: 3200 },
+    { name: "Fri", orders: 7, revenue: 1800 },
+    { name: "Sat", orders: 6, revenue: 1500 },
+    { name: "Sun", orders: 4, revenue: 1100 },
+  ];
+
   return (
     <div className="p-4 sm:p-6 bg-gray-50 min-h-screen">
       {/* HEADER */}
@@ -90,7 +107,6 @@ export default function Dashboard() {
             </div>
 
             <p className="text-sm text-gray-500 mb-1">{card.title}</p>
-
             <h2 className="text-2xl font-bold text-gray-800">{card.value}</h2>
           </div>
         ))}
@@ -111,6 +127,36 @@ export default function Dashboard() {
             {dashboard.pendingOrders}
           </p>
         </div>
+      </div>
+
+      {/* SIMPLE ANALYTICS CHART */}
+      <div className="mt-6 bg-white rounded-2xl border p-5 shadow-sm">
+        <h3 className="text-sm text-gray-500 mb-4">
+          Orders & Revenue (Weekly)
+        </h3>
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart
+            data={chartData}
+            margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip />
+            <Line
+              type="monotone"
+              dataKey="orders"
+              stroke="#3b82f6"
+              strokeWidth={2}
+            />
+            <Line
+              type="monotone"
+              dataKey="revenue"
+              stroke="#10b981"
+              strokeWidth={2}
+            />
+          </LineChart>
+        </ResponsiveContainer>
       </div>
     </div>
   );
