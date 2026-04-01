@@ -14,6 +14,10 @@ export default function Orders() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
+  // ✅ PAGINATION STATE
+  const [currentPage, setCurrentPage] = useState(1);
+  const ordersPerPage = 5;
+
   // ===== FORMAT DATE =====
   const formatDate = (date: string) => {
     const d = new Date(date);
@@ -38,6 +42,11 @@ export default function Orders() {
     };
     loadData();
   }, []);
+
+  // ===== RESET PAGE WHEN FILTER CHANGES =====
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [statusFilter, startDate, endDate]);
 
   // ===== ADD PRODUCT =====
   const addProduct = (productId: string) => {
@@ -99,6 +108,7 @@ export default function Orders() {
         }
         await confirmOrder(id);
       }
+
       if (status === "Shipped") {
         if (currentStatus !== "Confirmed") {
           return toast.error("Only confirmed orders can be shipped");
@@ -111,6 +121,10 @@ export default function Orders() {
           return toast.error("Only shipped orders can be delivered");
         }
         await deliverOrder(id);
+      }
+
+      if (status === "Cancelled") {
+        await cancelOrder(id);
       }
     } catch {
       toast.error("Failed");
@@ -170,6 +184,14 @@ export default function Orders() {
     return matchStatus && matchStart && matchEnd;
   });
 
+  // ===== PAGINATION LOGIC =====
+  const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
+
+  const paginatedOrders = filteredOrders.slice(
+    (currentPage - 1) * ordersPerPage,
+    currentPage * ordersPerPage,
+  );
+
   // ===== STATUS BADGE =====
   const getStatusStyle = (status: string) => {
     const map: any = {
@@ -184,7 +206,6 @@ export default function Orders() {
 
   return (
     <div className="space-y-6">
-      {/* HEADER */}
       <div>
         <h1 className="text-2xl font-semibold">Order Management</h1>
         <p className="text-gray-500 text-sm">
@@ -271,6 +292,7 @@ export default function Orders() {
           onChange={(e) => setEndDate(e.target.value)}
         />
       </div>
+
       <p className="text-gray-500 text-sm">
         Click on any row to see full order details.
       </p>
@@ -289,11 +311,9 @@ export default function Orders() {
           </thead>
 
           <tbody>
-            {filteredOrders.map((order) => (
-              <>
-                {/* MAIN ROW */}
+            {paginatedOrders.map((order) => (
+              <FragmentWrapper key={order._id}>
                 <tr
-                  key={order._id}
                   className="border-t cursor-pointer hover:bg-gray-50"
                   onClick={() =>
                     setExpandedOrder(
@@ -314,11 +334,10 @@ export default function Orders() {
                     </span>
                   </td>
 
-                  {/* ACTION DROPDOWN */}
                   <td className="p-3">
                     <select
                       className="border px-2 py-1 rounded"
-                      onClick={(e) => e.stopPropagation()} // Prevent row toggle
+                      onClick={(e) => e.stopPropagation()}
                       onChange={(e) =>
                         updateStatus(order._id, e.target.value, order.status)
                       }
@@ -335,33 +354,68 @@ export default function Orders() {
                   </td>
                 </tr>
 
-                {/* EXPANDED DETAILS */}
                 {expandedOrder === order._id && (
                   <tr className="bg-gray-50">
                     <td colSpan={5} className="p-4">
-                      <div className="space-y-2">
-                        <h3 className="font-medium">Products</h3>
-
-                        {order.products.map((item: any) => (
-                          <div
-                            key={item._id}
-                            className="flex justify-between border p-2 rounded"
-                          >
-                            <span>
-                              {item.productId?.name} × {item.quantity}
-                            </span>
-                            <span>${item.price * item.quantity}</span>
-                          </div>
-                        ))}
-                      </div>
+                      {order.products.map((item: any) => (
+                        <div
+                          key={item._id}
+                          className="flex justify-between border p-2 rounded mb-2"
+                        >
+                          <span>
+                            {item.productId?.name} × {item.quantity}
+                          </span>
+                          <span>${item.price * item.quantity}</span>
+                        </div>
+                      ))}
                     </td>
                   </tr>
                 )}
-              </>
+              </FragmentWrapper>
             ))}
           </tbody>
         </table>
       </div>
+
+      {/* PAGINATION */}
+      <div className="flex justify-between items-center mt-4 flex-wrap gap-2">
+        <p className="text-sm text-gray-500">
+          Page {currentPage} of {totalPages || 1}
+        </p>
+
+        <div className="flex gap-2">
+          <button
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage((p) => p - 1)}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Prev
+          </button>
+
+          {[...Array(totalPages)].map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrentPage(i + 1)}
+              className={`px-3 py-1 border rounded ${
+                currentPage === i + 1 ? "bg-black text-white" : ""
+              }`}
+            >
+              {i + 1}
+            </button>
+          ))}
+
+          <button
+            disabled={currentPage === totalPages || totalPages === 0}
+            onClick={() => setCurrentPage((p) => p + 1)}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
+
+// Helper wrapper to avoid React fragment key warning
+const FragmentWrapper = ({ children }: any) => <>{children}</>;
