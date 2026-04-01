@@ -87,13 +87,73 @@ export default function Orders() {
   };
 
   // ===== STATUS ACTIONS =====
-  const updateStatus = async (id: string, status: string) => {
+  const updateStatus = async (
+    id: string,
+    status: string,
+    currentStatus: string,
+  ) => {
     try {
-      await instance.patch(`/orders/${id}`, { status });
-      toast.success(`Updated to ${status}`);
-      fetchOrders();
+      if (status === "Confirmed") {
+        if (currentStatus !== "Pending") {
+          return toast.error("Only pending orders can be confirmed");
+        }
+        await confirmOrder(id);
+      }
+      if (status === "Shipped") {
+        if (currentStatus !== "Confirmed") {
+          return toast.error("Only confirmed orders can be shipped");
+        }
+        await shipOrder(id);
+      }
+
+      if (status === "Delivered") {
+        if (currentStatus !== "Shipped") {
+          return toast.error("Only shipped orders can be delivered");
+        }
+        await deliverOrder(id);
+      }
     } catch {
       toast.error("Failed");
+    }
+  };
+
+  const confirmOrder = async (id: string) => {
+    try {
+      await instance.patch(`/orders/${id}/confirm`);
+      toast.success("Order confirmed");
+      fetchOrders();
+    } catch {
+      toast.error("Failed to confirm order");
+    }
+  };
+
+  const shipOrder = async (id: string) => {
+    try {
+      await instance.patch(`/orders/${id}/ship`);
+      toast.success("Order shipped");
+      fetchOrders();
+    } catch {
+      toast.error("Failed to ship order");
+    }
+  };
+
+  const deliverOrder = async (id: string) => {
+    try {
+      await instance.patch(`/orders/${id}/deliver`);
+      toast.success("Order delivered");
+      fetchOrders();
+    } catch {
+      toast.error("Failed to deliver order");
+    }
+  };
+
+  const cancelOrder = async (id: string) => {
+    try {
+      await instance.patch(`/orders/${id}/cancel`);
+      toast.success("Order cancelled");
+      fetchOrders();
+    } catch {
+      toast.error("Cancel failed");
     }
   };
 
@@ -259,7 +319,9 @@ export default function Orders() {
                     <select
                       className="border px-2 py-1 rounded"
                       onClick={(e) => e.stopPropagation()} // Prevent row toggle
-                      onChange={(e) => updateStatus(order._id, e.target.value)}
+                      onChange={(e) =>
+                        updateStatus(order._id, e.target.value, order.status)
+                      }
                       defaultValue=""
                     >
                       <option value="" disabled>
