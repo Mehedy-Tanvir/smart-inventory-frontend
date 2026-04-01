@@ -26,7 +26,7 @@ export default function Sidebar() {
   return (
     <>
       {/* Mobile Hamburger Button - top right */}
-      <div className="lg:hidden bg-white fixed top-1 left-[2px] z-50">
+      <div className="lg:hidden bg-white fixed top-1 right-[2px] z-50">
         <button
           className="p-2 text-gray-700 bg-white rounded-md shadow hover:bg-gray-100 focus:outline-none"
           onClick={toggleSidebar}
@@ -64,7 +64,7 @@ export default function Sidebar() {
       {/* Mobile Overlay */}
       {sidebarOpen && (
         <div
-          className="fixed right-0 inset-0 z-30 bg-black bg-opacity-25 lg:hidden"
+          className="fixed right-1 inset-0 z-30 bg-black bg-opacity-25 lg:hidden"
           onClick={closeSidebar}
         />
       )}

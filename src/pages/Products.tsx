@@ -17,7 +17,6 @@ export default function Products() {
     minStock: "",
   });
 
-  // ✅ CATEGORY
   const handleCreateCategory = async () => {
     if (!categoryName.trim()) {
       toast.error("Category name is required");
@@ -28,27 +27,15 @@ export default function Products() {
       await createCategory(categoryName);
       toast.success(`Category "${categoryName}" created successfully`);
       setCategoryName("");
-    } catch (err) {
+    } catch {
       toast.error("Failed to create category");
     }
   };
 
-  // ✅ PRODUCT
   const handleCreateProduct = async () => {
-    if (!productForm.name) {
-      toast.error("Product name is required");
-      return;
-    }
-
-    if (!productForm.categoryId) {
-      toast.error("Please select a category");
-      return;
-    }
-
-    if (!productForm.price) {
-      toast.error("Price is required");
-      return;
-    }
+    if (!productForm.name) return toast.error("Product name is required");
+    if (!productForm.categoryId) return toast.error("Please select a category");
+    if (!productForm.price) return toast.error("Price is required");
 
     try {
       await createProduct({
@@ -59,7 +46,7 @@ export default function Products() {
         minStockThreshold: Number(productForm.minStock),
       });
 
-      toast.success(`"${productForm.name}" added to inventory`);
+      toast.success(`"${productForm.name}" added`);
 
       setProductForm({
         name: "",
@@ -68,28 +55,30 @@ export default function Products() {
         stock: "",
         minStock: "",
       });
-    } catch (err) {
+    } catch {
       toast.error("Failed to create product");
     }
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 px-3 sm:px-5 lg:px-8">
       {/* HEADER */}
       <div>
-        <h1 className="text-2xl font-semibold text-gray-800">
+        <h1 className="text-xl sm:text-2xl font-semibold text-gray-800">
           Products & Categories
         </h1>
-        <p className="text-sm text-gray-500">
+        <p className="text-xs sm:text-sm text-gray-500">
           Manage your inventory categories and products
         </p>
       </div>
 
-      {/* CATEGORY + PRODUCT FORM */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* CATEGORY CARD */}
-        <div className="bg-white p-5 rounded-2xl shadow-sm border hover:shadow-md transition">
-          <h2 className="font-semibold text-gray-700 mb-3">Create Category</h2>
+      {/* FORMS */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+        {/* CATEGORY */}
+        <div className="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border">
+          <h2 className="font-semibold text-gray-700 mb-3 text-sm sm:text-base">
+            Create Category
+          </h2>
 
           <input
             className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-black outline-none"
@@ -106,11 +95,13 @@ export default function Products() {
           </button>
         </div>
 
-        {/* PRODUCT FORM */}
-        <div className="lg:col-span-2 bg-white p-5 rounded-2xl shadow-sm border hover:shadow-md transition">
-          <h2 className="font-semibold text-gray-700 mb-4">Add Product</h2>
+        {/* PRODUCT */}
+        <div className="lg:col-span-2 bg-white p-4 sm:p-5 rounded-2xl shadow-sm border">
+          <h2 className="font-semibold text-gray-700 mb-4 text-sm sm:text-base">
+            Add Product
+          </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <input
               className="input-modern"
               placeholder="Product Name"
@@ -151,7 +142,7 @@ export default function Products() {
             <input
               type="number"
               className="input-modern"
-              placeholder="Stock Quantity"
+              placeholder="Stock"
               value={productForm.stock}
               onChange={(e) =>
                 setProductForm({ ...productForm, stock: e.target.value })
@@ -160,7 +151,7 @@ export default function Products() {
 
             <input
               type="number"
-              className="input-modern md:col-span-2"
+              className="input-modern sm:col-span-2"
               placeholder="Minimum Stock Threshold"
               value={productForm.minStock}
               onChange={(e) =>
@@ -171,20 +162,23 @@ export default function Products() {
 
           <button
             onClick={handleCreateProduct}
-            className="mt-4 bg-black text-white px-5 py-2 rounded-lg text-sm hover:bg-gray-800 transition"
+            className="mt-4 w-full sm:w-auto bg-black text-white px-5 py-2 rounded-lg text-sm hover:bg-gray-800 transition"
           >
             Create Product
           </button>
         </div>
       </div>
 
-      {/* PRODUCT TABLE */}
-      <div className="bg-white rounded-2xl shadow-sm border hover:shadow-md transition overflow-hidden">
-        <div className="p-5 border-b">
-          <h2 className="font-semibold text-gray-700">Product List</h2>
+      {/* TABLE / MOBILE LIST */}
+      <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
+        <div className="p-4 sm:p-5 border-b">
+          <h2 className="font-semibold text-gray-700 text-sm sm:text-base">
+            Product List
+          </h2>
         </div>
 
-        <div className="overflow-x-auto">
+        {/* DESKTOP TABLE */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-gray-50 text-gray-600">
               <tr>
@@ -197,42 +191,63 @@ export default function Products() {
             </thead>
 
             <tbody>
-              {products.length > 0 ? (
-                products.map((p: any) => (
-                  <tr
-                    key={p._id}
-                    className="border-t hover:bg-gray-50 transition"
-                  >
-                    <td className="px-5 py-3 font-medium text-gray-800">
-                      {p.name}
-                    </td>
-                    <td className="px-5 py-3 text-gray-600">
-                      {p.categoryName || "N/A"}
-                    </td>
-                    <td className="px-5 py-3">${p.price}</td>
-                    <td className="px-5 py-3">{p.stock}</td>
-                    <td className="px-5 py-3">
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium ${
-                          p.status === "Out of Stock"
-                            ? "bg-red-100 text-red-600"
-                            : "bg-green-100 text-green-600"
-                        }`}
-                      >
-                        {p.status || "Active"}
-                      </span>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={5} className="text-center py-10 text-gray-400">
-                    No products available
+              {products.map((p: any) => (
+                <tr key={p._id} className="border-t hover:bg-gray-50">
+                  <td className="px-5 py-3 font-medium">{p.name}</td>
+                  <td className="px-5 py-3">{p.categoryName || "N/A"}</td>
+                  <td className="px-5 py-3">${p.price}</td>
+                  <td className="px-5 py-3">{p.stock}</td>
+                  <td className="px-5 py-3">
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs ${
+                        p.status === "Out of Stock"
+                          ? "bg-red-100 text-red-600"
+                          : "bg-green-100 text-green-600"
+                      }`}
+                    >
+                      {p.status || "Active"}
+                    </span>
                   </td>
                 </tr>
-              )}
+              ))}
             </tbody>
           </table>
+        </div>
+
+        {/* MOBILE CARDS */}
+        <div className="md:hidden divide-y">
+          {products.length > 0 ? (
+            products.map((p: any) => (
+              <div key={p._id} className="p-4 space-y-2">
+                <div className="flex justify-between">
+                  <h3 className="font-medium text-gray-800">{p.name}</h3>
+                  <span className="text-sm font-semibold">${p.price}</span>
+                </div>
+
+                <p className="text-xs text-gray-500">
+                  {p.categoryName || "No category"}
+                </p>
+
+                <div className="flex justify-between items-center text-sm">
+                  <span>Stock: {p.stock}</span>
+
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs ${
+                      p.status === "Out of Stock"
+                        ? "bg-red-100 text-red-600"
+                        : "bg-green-100 text-green-600"
+                    }`}
+                  >
+                    {p.status || "Active"}
+                  </span>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="text-center py-6 text-gray-400">
+              No products available
+            </p>
+          )}
         </div>
       </div>
     </div>
