@@ -102,7 +102,7 @@ export default function Login() {
 
           <button
             onClick={() => navigate("/register")}
-            className="mt-2 w-full py-2.5 rounded-lg font-medium 
+            className="mt-2 cursor-pointer w-full py-2.5 rounded-lg font-medium 
             border border-black text-black
             transition-all duration-200
             hover:bg-black hover:text-white hover:shadow-md hover:-translate-y-[1px]
