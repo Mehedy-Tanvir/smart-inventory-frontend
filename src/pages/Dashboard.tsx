@@ -14,17 +14,14 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import Loader from "../components/Loader";
 
 export default function Dashboard() {
   const { data, isLoading } = useDashboard();
   const dashboard = data?.data;
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-[60vh]">
-        <p className="text-gray-500 text-lg">Loading dashboard...</p>
-      </div>
-    );
+    return <Loader />;
   }
 
   if (!dashboard) {
@@ -68,16 +65,8 @@ export default function Dashboard() {
     },
   ];
 
-  // Sample data for chart (replace with real API data if available)
-  const chartData = [
-    { name: "Mon", orders: 5, revenue: 1200 },
-    { name: "Tue", orders: 8, revenue: 2500 },
-    { name: "Wed", orders: 3, revenue: 900 },
-    { name: "Thu", orders: 10, revenue: 3200 },
-    { name: "Fri", orders: 7, revenue: 1800 },
-    { name: "Sat", orders: 6, revenue: 1500 },
-    { name: "Sun", orders: 4, revenue: 1100 },
-  ];
+  // chart data
+  const chartData = dashboard?.weeklyStats || [];
 
   return (
     <div className="p-4 sm:p-6 bg-gray-50 min-h-screen">

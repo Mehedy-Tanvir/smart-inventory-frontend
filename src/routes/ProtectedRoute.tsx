@@ -1,6 +1,7 @@
 import { useEffect, useState, type JSX } from "react";
 import { Navigate } from "react-router-dom";
 import instance from "../services/api";
+import Loader from "../components/Loader";
 
 export default function ProtectedRoute({
   children,
@@ -39,7 +40,7 @@ export default function ProtectedRoute({
   }, [token]);
 
   if (isValid === null) {
-    return <div>Checking authentication...</div>;
+    return <Loader />;
   }
 
   if (!isValid) {
