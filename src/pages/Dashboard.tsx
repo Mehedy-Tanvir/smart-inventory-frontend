@@ -81,7 +81,7 @@ export default function Dashboard() {
 
   return (
     <div className="p-4 sm:p-6 bg-gray-50 min-h-screen">
-      {/* HEADER */}
+      {/* Header */}
       <div className="mb-6">
         <h1 className="text-xl sm:text-2xl font-semibold text-gray-800">
           Dashboard
@@ -91,7 +91,7 @@ export default function Dashboard() {
         </p>
       </div>
 
-      {/* STATS GRID */}
+      {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
         {cards.map((card, index) => (
           <div
@@ -112,7 +112,7 @@ export default function Dashboard() {
         ))}
       </div>
 
-      {/* SECONDARY STATS */}
+      {/* Secondary Stats */}
       <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div className="bg-white rounded-2xl border p-5 shadow-sm">
           <h3 className="text-sm text-gray-500 mb-2">Completed Orders</h3>
@@ -129,7 +129,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* SIMPLE ANALYTICS CHART */}
+      {/* Simple Analytics Chart */}
       <div className="mt-6 bg-white rounded-2xl border p-5 shadow-sm">
         <h3 className="text-sm text-gray-500 mb-4">
           Orders & Revenue (Weekly)

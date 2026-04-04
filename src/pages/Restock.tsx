@@ -83,13 +83,13 @@ export default function Restock() {
 
   return (
     <div className="p-4 sm:p-6">
-      {/* HEADER */}
+      {/* Header */}
       <div className="mb-6">
         <h1 className="text-xl sm:text-2xl font-semibold">Restock Queue</h1>
         <p className="text-gray-500 text-sm">Manage low stock products</p>
       </div>
 
-      {/* DESKTOP TABLE */}
+      {/* Desktop Table */}
       <div className="hidden md:block bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         {loading ? (
           <p className="p-6">Loading...</p>
@@ -152,7 +152,7 @@ export default function Restock() {
         )}
       </div>
 
-      {/* MOBILE CARDS */}
+      {/* Mobile Cards */}
       <div className="md:hidden space-y-4">
         {loading ? (
           <p>Loading...</p>
@@ -206,7 +206,7 @@ export default function Restock() {
         )}
       </div>
 
-      {/* MODAL */}
+      {/* Modal */}
       {selectedItem && (
         <div className="fixed inset-0 bg-black/40 flex items-end sm:items-center justify-center z-50">
           <div className="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-6">

@@ -1,4 +1,3 @@
-// src/components/Sidebar.tsx
 import { Link, useLocation } from "react-router-dom";
 import { useUIStore } from "../store/uiStore";
 import {

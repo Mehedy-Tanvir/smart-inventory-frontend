@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import { useCategories } from "../features/category/useCategories";
 import { useProducts } from "../features/product/useProducts";
@@ -16,16 +16,16 @@ export default function Products() {
     minStock: "",
   });
 
-  // SEARCH & FILTER STATE
+  // Search and filter state
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
 
-  // PAGINATION STATE
+  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  // FILTERED PRODUCTS
+  // Filter products based on search, category, and status
   const filteredProducts = products.filter((p: any) => {
     const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase());
     const matchesCategory = selectedCategory
@@ -39,7 +39,7 @@ export default function Products() {
     return matchesSearch && matchesCategory && matchesStatus;
   });
 
-  // PAGINATION
+  // Pagination calculations
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
   const paginatedProducts = filteredProducts.slice(
     (currentPage - 1) * itemsPerPage,
@@ -47,9 +47,7 @@ export default function Products() {
   );
 
   // RESET PAGE WHEN FILTERS CHANGE
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [search, selectedCategory, statusFilter]);
+  // page reset is handled in filter change handlers
 
   const handleCreateCategory = async () => {
     if (!categoryName.trim()) {
@@ -96,7 +94,7 @@ export default function Products() {
 
   return (
     <div className="space-y-6 px-3 sm:px-5 lg:px-8">
-      {/* HEADER */}
+      {/* Header */}
       <div>
         <h1 className="text-xl sm:text-2xl font-semibold text-gray-800">
           Products & Categories
@@ -106,9 +104,9 @@ export default function Products() {
         </p>
       </div>
 
-      {/* FORMS */}
+      {/* Forms */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-        {/* CATEGORY FORM */}
+        {/* Category Form*/}
         <div className="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border">
           <h2 className="font-semibold text-gray-700 mb-3 text-sm sm:text-base">
             Create Category
@@ -127,7 +125,7 @@ export default function Products() {
           </button>
         </div>
 
-        {/* PRODUCT FORM */}
+        {/* Product Form */}
         <div className="lg:col-span-2 bg-white p-4 sm:p-5 rounded-2xl shadow-sm border">
           <h2 className="font-semibold text-gray-700 mb-4 text-sm sm:text-base">
             Add Product
@@ -192,21 +190,27 @@ export default function Products() {
         </div>
       </div>
 
-      {/* SEARCH & FILTER */}
+      {/* Search and Filter */}
       <div className="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
         <input
           type="text"
           placeholder="Search products..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setCurrentPage(1);
+          }}
           className="input-modern w-full md:w-1/3"
         />
 
         <div className="flex gap-3 w-full md:w-auto">
           <select
             value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            className="input-modern w-full"
+            onChange={(e) => {
+              setSelectedCategory(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="input-modern w/full"
           >
             <option value="">All Categories</option>
             {categories.map((cat: any) => (
@@ -218,7 +222,10 @@ export default function Products() {
 
           <select
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
+            onChange={(e) => {
+              setStatusFilter(e.target.value);
+              setCurrentPage(1);
+            }}
             className="input-modern w-full"
           >
             <option value="">All Status</option>
@@ -228,7 +235,7 @@ export default function Products() {
         </div>
       </div>
 
-      {/* PRODUCT LIST */}
+      {/* Product List */}
       <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
         <div className="p-4 sm:p-5 border-b">
           <h2 className="font-semibold text-gray-700 text-sm sm:text-base">
@@ -236,7 +243,7 @@ export default function Products() {
           </h2>
         </div>
 
-        {/* DESKTOP TABLE */}
+        {/* Desktop Table */}
         <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-gray-50 text-gray-600">
@@ -281,7 +288,7 @@ export default function Products() {
           </table>
         </div>
 
-        {/* MOBILE CARDS */}
+        {/* Mobile Cards */}
         <div className="md:hidden divide-y">
           {paginatedProducts.length > 0 ? (
             paginatedProducts.map((p: any) => (
@@ -314,7 +321,7 @@ export default function Products() {
           )}
         </div>
 
-        {/* PAGINATION CONTROLS */}
+        {/* Pagination Controls */}
         <div className="flex justify-center items-center space-x-3 py-4 border-t">
           <button
             disabled={currentPage === 1}

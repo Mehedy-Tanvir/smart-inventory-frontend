@@ -14,17 +14,17 @@ export default function Orders() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
-  // ✅ PAGINATION STATE
+  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const ordersPerPage = 5;
 
-  // ===== FORMAT DATE =====
+  // Format date for display
   const formatDate = (date: string) => {
     const d = new Date(date);
     return `${d.toLocaleDateString()} ${d.toLocaleTimeString()}`;
   };
 
-  // ===== FETCH =====
+  // Fetch products and orders on mount
   const fetchProducts = async () => {
     const res = await instance.get("/products");
     setProducts(res.data.data || res.data || []);
@@ -43,12 +43,7 @@ export default function Orders() {
     loadData();
   }, []);
 
-  // ===== RESET PAGE WHEN FILTER CHANGES =====
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [statusFilter, startDate, endDate]);
-
-  // ===== ADD PRODUCT =====
+  // Add product to order with duplicate check
   const addProduct = (productId: string) => {
     if (!productId) return;
 
@@ -61,20 +56,20 @@ export default function Orders() {
     setSelectedProducts([...selectedProducts, { productId, quantity: 1 }]);
   };
 
-  // ===== UPDATE QTY =====
+  // Update quantity for a selected product
   const updateQuantity = (index: number, qty: number) => {
     const updated = [...selectedProducts];
     updated[index].quantity = qty;
     setSelectedProducts(updated);
   };
 
-  // ===== TOTAL =====
+  // Total price calculation
   const totalPrice = selectedProducts.reduce((total, item) => {
     const product = products.find((p) => p._id === item.productId);
     return total + (product?.price || 0) * item.quantity;
   }, 0);
 
-  // ===== CREATE ORDER =====
+  // Create order with validation
   const createOrder = async () => {
     if (!customerName) return toast.error("Customer name required");
     if (!selectedProducts.length)
@@ -95,7 +90,7 @@ export default function Orders() {
     }
   };
 
-  // ===== STATUS ACTIONS =====
+  // Status update with validation
   const updateStatus = async (
     id: string,
     status: string,
@@ -171,7 +166,7 @@ export default function Orders() {
     }
   };
 
-  // ===== FILTER =====
+  // Filtering Logic
   const filteredOrders = orders.filter((order) => {
     const matchStatus = statusFilter ? order.status === statusFilter : true;
 
@@ -184,7 +179,7 @@ export default function Orders() {
     return matchStatus && matchStart && matchEnd;
   });
 
-  // ===== PAGINATION LOGIC =====
+  // Pagination Logic
   const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
 
   const paginatedOrders = filteredOrders.slice(
@@ -192,7 +187,7 @@ export default function Orders() {
     currentPage * ordersPerPage,
   );
 
-  // ===== STATUS BADGE =====
+  // Status badge styles
   const getStatusStyle = (status: string) => {
     const map: any = {
       Pending: "bg-yellow-100 text-yellow-700",
@@ -213,7 +208,7 @@ export default function Orders() {
         </p>
       </div>
 
-      {/* CREATE ORDER */}
+      {/* Create Order */}
       <div className="bg-white p-5 rounded-xl border shadow-sm">
         <h2 className="font-semibold mb-3">Create Order</h2>
 
@@ -263,12 +258,15 @@ export default function Orders() {
         </button>
       </div>
 
-      {/* FILTERS */}
+      {/* Filters */}
       <div className="flex gap-3 flex-wrap">
         <select
           className="input-modern"
           value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
+          onChange={(e) => {
+            setStatusFilter(e.target.value);
+            setCurrentPage(1);
+          }}
         >
           <option value="">All</option>
           <option>Pending</option>
@@ -282,14 +280,20 @@ export default function Orders() {
           type="date"
           className="input-modern"
           value={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
+          onChange={(e) => {
+            setStartDate(e.target.value);
+            setCurrentPage(1);
+          }}
         />
 
         <input
           type="date"
           className="input-modern"
           value={endDate}
-          onChange={(e) => setEndDate(e.target.value)}
+          onChange={(e) => {
+            setEndDate(e.target.value);
+            setCurrentPage(1);
+          }}
         />
       </div>
 
@@ -297,7 +301,7 @@ export default function Orders() {
         Click on any row to see full order details.
       </p>
 
-      {/* TABLE */}
+      {/* Table */}
       <div className="bg-white border rounded-xl overflow-hidden">
         <table className="w-full text-sm">
           <thead className="bg-gray-50 text-gray-600">
@@ -377,7 +381,7 @@ export default function Orders() {
         </table>
       </div>
 
-      {/* PAGINATION */}
+      {/* Pagination */}
       <div className="flex justify-between items-center mt-4 flex-wrap gap-2">
         <p className="text-sm text-gray-500">
           Page {currentPage} of {totalPages || 1}
@@ -417,5 +421,4 @@ export default function Orders() {
   );
 }
 
-// Helper wrapper to avoid React fragment key warning
 const FragmentWrapper = ({ children }: any) => <>{children}</>;
