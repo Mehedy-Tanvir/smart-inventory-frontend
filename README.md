@@ -4,7 +4,7 @@ A web application frontend for managing products, stock levels, customer orders,
 
 ## Live Demo
 
-[View Live Application](https://your-frontend-vercel-link.vercel.app)
+[View Live Application](https://glowing-heliotrope-7acaa7.netlify.app)
 
 ## Features
 
@@ -53,8 +53,8 @@ A web application frontend for managing products, stock levels, customer orders,
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/mern-inventory-frontend.git
-cd mern-inventory-frontend
+git clone https://github.com/Mehedy-Tanvir/smart-inventory-frontend.git
+cd smart-inventory-frontend
 
 ```
 
@@ -78,7 +78,7 @@ The app will run on http://localhost:5173 by default.
 
 ### Environment Variables
 
-Create a .env file in the root directory with the following variables:
+Create a `.env` file in the root directory with the following variables:
 
 ```
 VITE_API_URL=https://your-backend.vercel.app
@@ -94,21 +94,23 @@ Smart Inventory Backend
 
 ### Backend Overview
 
-APIs
-/auth → Signup, Login
-/products → CRUD operations for products
-/categories → CRUD operations for categories
-/orders → Create, update, cancel orders
-/restock → Manage restock queue
-/dashboard → Fetch dashboard metrics
-/activity → Fetch activity logs
-Business Logic
-Stock deduction only on confirmed orders
-Prevent duplicate products in order
-Auto update product status and restock queue
+- APIs
+- /auth → Signup, Login
+- /products → CRUD operations for products
+- /categories → CRUD operations for categories
+- /orders → Create, update, cancel orders
+- /restock → Manage restock queue
+- /dashboard → Fetch dashboard metrics
+- /activity → Fetch activity logs
+
+## Business Logic
+
+- Stock deduction only on confirmed orders
+- Prevent duplicate products in order
+- Auto update product status and restock queue
 
 ## Deployment
 
-Frontend: Netlify
-Backend: Vercel
-Database: MongoDB Atlas
+- Frontend: Netlify
+- Backend: Vercel
+- Database: MongoDB Atlas
