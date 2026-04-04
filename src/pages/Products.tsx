@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useCategories } from "../features/category/useCategories";
 import { useProducts } from "../features/product/useProducts";
@@ -16,39 +16,46 @@ export default function Products() {
     minStock: "",
   });
 
-  // Search and filter state
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
 
-  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  // Filter products based on search, category, and status
+  // FILTER
   const filteredProducts = products.filter((p: any) => {
     const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase());
+
     const matchesCategory = selectedCategory
       ? p.categoryId === selectedCategory
       : true;
+
     const matchesStatus = statusFilter
       ? statusFilter === "out"
         ? p.status === "Out of Stock"
         : p.status !== "Out of Stock"
       : true;
+
     return matchesSearch && matchesCategory && matchesStatus;
   });
 
-  // Pagination calculations
+  // PAGINATION
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+
   const paginatedProducts = filteredProducts.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage,
   );
 
-  // RESET PAGE WHEN FILTERS CHANGE
-  // page reset is handled in filter change handlers
+  // ✅ FIX: reset page if it becomes invalid after filtering
+  useEffect(() => {
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(1);
+    }
+  }, [filteredProducts.length, totalPages, currentPage]);
 
+  // HANDLERS
   const handleCreateCategory = async () => {
     if (!categoryName.trim()) {
       toast.error("Category name is required");
@@ -57,7 +64,7 @@ export default function Products() {
 
     try {
       await createCategory(categoryName);
-      toast.success(`Category "${categoryName}" created successfully`);
+      toast.success(`Category "${categoryName}" created`);
       setCategoryName("");
     } catch {
       toast.error("Failed to create category");
@@ -93,44 +100,52 @@ export default function Products() {
   };
 
   return (
-    <div className="space-y-6 px-3 sm:px-5 lg:px-8">
+    <div className="space-y-6 px-4 sm:px-6 lg:px-10 py-6">
       {/* Header */}
       <div>
-        <h1 className="text-xl sm:text-2xl font-semibold text-gray-800">
+        <h1 className="text-2xl font-semibold text-gray-800">
           Products & Categories
         </h1>
-        <p className="text-xs sm:text-sm text-gray-500">
-          Manage your inventory categories and products
+        <p className="text-sm text-gray-500 mt-1">
+          Manage your inventory easily
         </p>
       </div>
 
       {/* Forms */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-        {/* Category Form*/}
-        <div className="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border">
-          <h2 className="font-semibold text-gray-700 mb-3 text-sm sm:text-base">
-            Create Category
-          </h2>
-          <input
-            className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-black outline-none"
-            placeholder="Category Name"
-            value={categoryName}
-            onChange={(e) => setCategoryName(e.target.value)}
-          />
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        {/* Category */}
+        <div className="bg-white rounded-2xl border shadow-sm p-5 flex flex-col justify-between">
+          <div>
+            <h2 className="text-lg font-semibold text-gray-800">
+              Create Category
+            </h2>
+
+            <div className="mt-5 space-y-2">
+              <label className="text-sm font-medium text-gray-700">
+                Category Name
+              </label>
+              <input
+                className="w-full mt-2 rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:ring-black outline-none"
+                placeholder="e.g. Electronics"
+                value={categoryName}
+                onChange={(e) => setCategoryName(e.target.value)}
+              />
+            </div>
+          </div>
+
           <button
             onClick={handleCreateCategory}
-            className="mt-3 w-full bg-black text-white py-2 rounded-lg text-sm hover:bg-gray-800 transition"
+            className="mt-6 w-full cursor-pointer bg-black text-white py-2.5 rounded-lg text-sm font-medium hover:bg-gray-800 transition"
           >
             Add Category
           </button>
         </div>
 
-        {/* Product Form */}
-        <div className="lg:col-span-2 bg-white p-4 sm:p-5 rounded-2xl shadow-sm border">
-          <h2 className="font-semibold text-gray-700 mb-4 text-sm sm:text-base">
-            Add Product
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        {/* Product */}
+        <div className="xl:col-span-2 bg-white rounded-2xl border shadow-sm p-5">
+          <h2 className="text-lg font-semibold text-gray-800">Add Product</h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
             <input
               className="input-modern"
               placeholder="Product Name"
@@ -139,11 +154,15 @@ export default function Products() {
                 setProductForm({ ...productForm, name: e.target.value })
               }
             />
+
             <select
               className="input-modern"
               value={productForm.categoryId}
               onChange={(e) =>
-                setProductForm({ ...productForm, categoryId: e.target.value })
+                setProductForm({
+                  ...productForm,
+                  categoryId: e.target.value,
+                })
               }
             >
               <option value="">Select Category</option>
@@ -153,15 +172,17 @@ export default function Products() {
                 </option>
               ))}
             </select>
+
             <input
               type="number"
-              className="input-modern"
+              className="input-modern cursor-pointer"
               placeholder="Price"
               value={productForm.price}
               onChange={(e) =>
                 setProductForm({ ...productForm, price: e.target.value })
               }
             />
+
             <input
               type="number"
               className="input-modern"
@@ -171,6 +192,7 @@ export default function Products() {
                 setProductForm({ ...productForm, stock: e.target.value })
               }
             />
+
             <input
               type="number"
               className="input-modern sm:col-span-2"
@@ -181,20 +203,20 @@ export default function Products() {
               }
             />
           </div>
+
           <button
             onClick={handleCreateProduct}
-            className="mt-4 w-full sm:w-auto bg-black text-white px-5 py-2 rounded-lg text-sm hover:bg-gray-800 transition"
+            className="mt-5 cursor-pointer bg-black text-white px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-800 transition"
           >
             Create Product
           </button>
         </div>
       </div>
 
-      {/* Search and Filter */}
-      <div className="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
+      {/* Filters */}
+      <div className="bg-white p-4 rounded-2xl border shadow-sm flex flex-col md:flex-row gap-3">
         <input
-          type="text"
-          placeholder="Search products..."
+          placeholder="Search..."
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
@@ -203,70 +225,56 @@ export default function Products() {
           className="input-modern w-full md:w-1/3"
         />
 
-        <div className="flex gap-3 w-full md:w-auto">
-          <select
-            value={selectedCategory}
-            onChange={(e) => {
-              setSelectedCategory(e.target.value);
-              setCurrentPage(1);
-            }}
-            className="input-modern w/full"
-          >
-            <option value="">All Categories</option>
-            {categories.map((cat: any) => (
-              <option key={cat._id} value={cat._id}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
+        <select
+          value={selectedCategory}
+          onChange={(e) => {
+            setSelectedCategory(e.target.value);
+            setCurrentPage(1);
+          }}
+          className="input-modern"
+        >
+          <option value="">All Categories</option>
+          {categories.map((cat: any) => (
+            <option key={cat._id} value={cat._id}>
+              {cat.name}
+            </option>
+          ))}
+        </select>
 
-          <select
-            value={statusFilter}
-            onChange={(e) => {
-              setStatusFilter(e.target.value);
-              setCurrentPage(1);
-            }}
-            className="input-modern w-full"
-          >
-            <option value="">All Status</option>
-            <option value="active">Active</option>
-            <option value="out">Out of Stock</option>
-          </select>
-        </div>
+        <select
+          value={statusFilter}
+          onChange={(e) => {
+            setStatusFilter(e.target.value);
+            setCurrentPage(1);
+          }}
+          className="input-modern"
+        >
+          <option value="">All Status</option>
+          <option value="active">Active</option>
+          <option value="out">Out of Stock</option>
+        </select>
       </div>
 
       {/* Product List */}
-      <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
-        <div className="p-4 sm:p-5 border-b">
-          <h2 className="font-semibold text-gray-700 text-sm sm:text-base">
-            Product List ({filteredProducts.length})
-          </h2>
+      <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
+        <div className="p-4 border-b font-semibold">
+          Products ({filteredProducts.length})
         </div>
 
-        {/* Desktop Table */}
-        <div className="hidden md:block overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 text-gray-600">
-              <tr>
-                <th className="px-5 py-3 text-left">Product</th>
-                <th className="px-5 py-3 text-left">Category</th>
-                <th className="px-5 py-3 text-left">Price</th>
-                <th className="px-5 py-3 text-left">Stock</th>
-                <th className="px-5 py-3 text-left">Status</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {paginatedProducts.length > 0 ? (
-                paginatedProducts.map((p: any) => (
-                  <tr key={p._id} className="border-t hover:bg-gray-50">
-                    <td className="px-5 py-3 font-medium">{p.name}</td>
-                    <td className="px-5 py-3">{p.categoryName || "N/A"}</td>
+        {/* Desktop */}
+        <div className="hidden md:block">
+          {paginatedProducts.length > 0 ? (
+            <table className="w-full text-sm">
+              <tbody>
+                {paginatedProducts.map((p: any) => (
+                  <tr key={p._id} className="border-t">
+                    <td className="px-5 py-3">{p.name}</td>
+                    <td className="px-5 py-3">{p.categoryName}</td>
                     <td className="px-5 py-3">${p.price}</td>
                     <td className="px-5 py-3">{p.stock}</td>
                     <td className="px-5 py-3">
                       <span
-                        className={`px-3 py-1 rounded-full text-xs ${
+                        className={`px-2 py-1 rounded text-xs ${
                           p.status === "Out of Stock"
                             ? "bg-red-100 text-red-600"
                             : "bg-green-100 text-green-600"
@@ -276,34 +284,34 @@ export default function Products() {
                       </span>
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={5} className="text-center py-6 text-gray-400">
-                    No products match your filters
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p className="text-center py-6 text-gray-400">
+              No products match your filters
+            </p>
+          )}
         </div>
 
-        {/* Mobile Cards */}
+        {/* ✅ FIXED MOBILE */}
         <div className="md:hidden divide-y">
           {paginatedProducts.length > 0 ? (
             paginatedProducts.map((p: any) => (
               <div key={p._id} className="p-4 space-y-2">
                 <div className="flex justify-between">
-                  <h3 className="font-medium text-gray-800">{p.name}</h3>
-                  <span className="text-sm font-semibold">${p.price}</span>
+                  <h3 className="font-medium">{p.name}</h3>
+                  <span>${p.price}</span>
                 </div>
+
                 <p className="text-xs text-gray-500">
                   {p.categoryName || "No category"}
                 </p>
-                <div className="flex justify-between items-center text-sm">
+
+                <div className="flex justify-between">
                   <span>Stock: {p.stock}</span>
                   <span
-                    className={`px-2 py-1 rounded-full text-xs ${
+                    className={`px-2 py-1 rounded text-xs ${
                       p.status === "Out of Stock"
                         ? "bg-red-100 text-red-600"
                         : "bg-green-100 text-green-600"
@@ -321,21 +329,23 @@ export default function Products() {
           )}
         </div>
 
-        {/* Pagination Controls */}
-        <div className="flex justify-center items-center space-x-3 py-4 border-t">
+        {/* Pagination */}
+        <div className="flex justify-center gap-4 py-4 border-t">
           <button
             disabled={currentPage === 1}
-            onClick={() => setCurrentPage((prev) => prev - 1)}
+            onClick={() => setCurrentPage((p) => p - 1)}
             className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
           >
             Prev
           </button>
+
           <span>
-            Page {currentPage} of {totalPages || 1}
+            {currentPage} / {totalPages || 1}
           </span>
+
           <button
             disabled={currentPage === totalPages || totalPages === 0}
-            onClick={() => setCurrentPage((prev) => prev + 1)}
+            onClick={() => setCurrentPage((p) => p + 1)}
             className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
           >
             Next
