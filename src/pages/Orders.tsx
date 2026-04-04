@@ -252,7 +252,7 @@ export default function Orders() {
 
         <button
           onClick={createOrder}
-          className="mt-3 bg-black text-white px-4 py-2 rounded"
+          className="mt-3 cursor-pointer bg-black text-white px-4 py-2 rounded"
         >
           Create Order
         </button>
@@ -391,7 +391,7 @@ export default function Orders() {
           <button
             disabled={currentPage === 1}
             onClick={() => setCurrentPage((p) => p - 1)}
-            className="px-3 py-1 border rounded disabled:opacity-50"
+            className="px-3 cursor-pointer py-1 border rounded disabled:opacity-50"
           >
             Prev
           </button>
@@ -411,7 +411,7 @@ export default function Orders() {
           <button
             disabled={currentPage === totalPages || totalPages === 0}
             onClick={() => setCurrentPage((p) => p + 1)}
-            className="px-3 py-1 border rounded disabled:opacity-50"
+            className="px-3 cursor-pointer py-1 border rounded disabled:opacity-50"
           >
             Next
           </button>
