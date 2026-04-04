@@ -67,6 +67,8 @@ export default function Dashboard() {
 
   // chart data
   const chartData = dashboard?.weeklyStats || [];
+  // product summary
+  const productSummary = dashboard?.productSummary || [];
 
   return (
     <div className="p-4 sm:p-6 bg-gray-50 min-h-screen">
@@ -146,6 +148,44 @@ export default function Dashboard() {
             />
           </LineChart>
         </ResponsiveContainer>
+      </div>
+
+      {/* Product Summary */}
+      <div className="mt-6 bg-white rounded-2xl border p-5 shadow-sm">
+        <h3 className="text-sm text-gray-500 mb-4">Product Summary</h3>
+
+        {productSummary.length === 0 ? (
+          <p className="text-gray-400 text-sm">No products available</p>
+        ) : (
+          <div className="space-y-3">
+            {productSummary.map((product: any, index: number) => (
+              <div
+                key={index}
+                className="flex items-center justify-between border-b pb-2 last:border-none"
+              >
+                <div>
+                  <p className="text-sm font-medium text-gray-800">
+                    {product.name}
+                  </p>
+                  <p className="text-xs text-gray-500">{product.stock} left</p>
+                </div>
+
+                <span
+                  className={`text-xs px-2 py-1 rounded-full font-medium
+              ${
+                product.status === "Low Stock"
+                  ? "bg-red-100 text-red-600"
+                  : product.status === "Out of Stock"
+                    ? "bg-gray-200 text-gray-600"
+                    : "bg-green-100 text-green-600"
+              }`}
+                >
+                  {product.status}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
