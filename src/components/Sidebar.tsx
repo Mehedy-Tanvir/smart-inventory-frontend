@@ -9,8 +9,11 @@ import {
   FiRefreshCw,
   FiActivity,
   FiLogOut,
+  FiUsers,
 } from "react-icons/fi";
 import toast from "react-hot-toast";
+import { useEffect, useState } from "react";
+import instance from "../services/api";
 
 const menuItems = [
   { label: "Dashboard", icon: <FiHome />, path: "/" },
@@ -24,6 +27,26 @@ export default function Sidebar() {
   const { sidebarOpen, toggleSidebar, closeSidebar } = useUIStore();
   const location = useLocation();
   const navigate = useNavigate();
+
+  const [role, setRole] = useState<string | null>(null);
+
+  // Fetch current user role from backend
+  useEffect(() => {
+    const fetchRole = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      try {
+        const res = await instance.get("/auth/verify-token", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setRole(res.data.user.role);
+      } catch {
+        setRole(null);
+      }
+    };
+    fetchRole();
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -73,6 +96,25 @@ export default function Sidebar() {
                 {item.label}
               </Link>
             ))}
+
+            {/* Admin-only Users link */}
+            {role === "admin" && (
+              <Link
+                to="/users"
+                onClick={closeSidebar}
+                className={`flex items-center px-3 py-2 rounded-md hover:bg-gray-100 transition-colors
+                  ${
+                    location.pathname === "/users"
+                      ? "bg-gray-200 font-semibold"
+                      : ""
+                  }`}
+              >
+                <span className="mr-3">
+                  <FiUsers />
+                </span>
+                Users
+              </Link>
+            )}
           </nav>
 
           {/* Logout Button (BOTTOM) */}

@@ -9,6 +9,7 @@ import Layout from "../components/Layout";
 import ActivityLog from "../pages/ActivityLog";
 import ProtectedRoute from "./ProtectedRoute";
 import PublicRoute from "./PublicRoute";
+import Users from "../pages/Users";
 
 export const router = createBrowserRouter([
   // Public Routes
@@ -76,6 +77,17 @@ export const router = createBrowserRouter([
       <ProtectedRoute>
         <Layout>
           <ActivityLog />
+        </Layout>
+      </ProtectedRoute>
+    ),
+  },
+  // Admin-only route
+  {
+    path: "/users",
+    element: (
+      <ProtectedRoute allowedRoles={["admin"]}>
+        <Layout>
+          <Users />
         </Layout>
       </ProtectedRoute>
     ),

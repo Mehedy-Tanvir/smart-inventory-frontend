@@ -3,18 +3,24 @@ import { Navigate } from "react-router-dom";
 import instance from "../services/api";
 import Loader from "../components/Loader";
 
+interface ProtectedRouteProps {
+  children: JSX.Element;
+  allowedRoles?: string[]; // optional array of allowed roles
+}
+
 export default function ProtectedRoute({
   children,
-}: {
-  children: JSX.Element;
-}) {
-  const [isValid, setIsValid] = useState<boolean | null>(null);
+  allowedRoles,
+}: ProtectedRouteProps) {
+  const [auth, setAuth] = useState<{ valid: boolean; role?: string } | null>(
+    null,
+  );
   const token = localStorage.getItem("token");
 
   useEffect(() => {
     const verify = async () => {
       if (!token) {
-        setIsValid(false);
+        setAuth({ valid: false });
         return;
       }
 
@@ -25,13 +31,9 @@ export default function ProtectedRoute({
           },
         });
 
-        if (res.data.valid) {
-          setIsValid(true);
-        } else {
-          setIsValid(false);
-        }
+        setAuth({ valid: true, role: res.data.user.role });
       } catch {
-        setIsValid(false);
+        setAuth({ valid: false });
         localStorage.removeItem("token");
       }
     };
@@ -39,12 +41,13 @@ export default function ProtectedRoute({
     verify();
   }, [token]);
 
-  if (isValid === null) {
-    return <Loader />;
-  }
+  if (auth === null) return <Loader />;
 
-  if (!isValid) {
-    return <Navigate to="/login" replace />;
+  if (!auth.valid) return <Navigate to="/login" replace />;
+
+  // Check role if allowedRoles is set
+  if (allowedRoles && !allowedRoles.includes(auth.role!)) {
+    return <Navigate to="/" replace />;
   }
 
   return children;
