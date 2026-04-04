@@ -14,7 +14,6 @@ export default function Users() {
   const [loading, setLoading] = useState(true);
   const [promotingId, setPromotingId] = useState<string | null>(null);
 
-  // Fetch users from API
   const fetchUsers = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -33,7 +32,6 @@ export default function Users() {
     fetchUsers();
   }, []);
 
-  // Promote manager → admin
   const handlePromote = async (userId: string) => {
     try {
       setPromotingId(userId);
@@ -65,25 +63,25 @@ export default function Users() {
   }
 
   return (
-    <div className="p-6">
+    <div className="p-4 sm:p-6 md:p-8">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4 md:mb-0">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mb-2 sm:mb-0">
           Users Management
         </h1>
-        <p className="text-gray-500 text-sm md:text-base">
+        <p className="text-gray-500 text-sm sm:text-base">
           Manage registered users and assign admin roles.
         </p>
       </div>
 
       {/* Table container */}
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white shadow-lg rounded-lg overflow-hidden text-sm md:text-base">
+      <div className="overflow-x-auto rounded-lg shadow-lg">
+        <table className="min-w-full bg-white text-sm sm:text-base">
           <thead className="bg-gray-100 text-gray-600 uppercase tracking-wider">
             <tr>
-              <th className="p-4 text-left">Email</th>
-              <th className="p-4 text-left">Role</th>
-              <th className="p-4 text-center">Actions</th>
+              <th className="p-3 text-left">Email</th>
+              <th className="p-3 text-left">Role</th>
+              <th className="p-3 text-center">Actions</th>
             </tr>
           </thead>
 
@@ -93,10 +91,10 @@ export default function Users() {
                 key={user.id}
                 className="border-b hover:bg-gray-50 transition-colors"
               >
-                <td className="p-4 break-words">{user.email}</td>
-                <td className="p-4 capitalize">
+                <td className="p-3 break-words">{user.email}</td>
+                <td className="p-3 capitalize">
                   <span
-                    className={`px-3 py-1 rounded-full font-medium text-xs md:text-sm ${
+                    className={`px-3 py-1 rounded-full font-medium text-xs sm:text-sm ${
                       user.role === "admin"
                         ? "bg-green-100 text-green-700"
                         : "bg-yellow-100 text-yellow-700"
@@ -105,17 +103,17 @@ export default function Users() {
                     {user.role}
                   </span>
                 </td>
-                <td className="p-4 text-center">
+                <td className="p-3 text-center">
                   {user.role === "manager" ? (
                     <button
                       onClick={() => handlePromote(user.id)}
                       disabled={promotingId === user.id}
-                      className="px-4 cursor-pointer py-1.5 text-sm md:text-base bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 transition"
+                      className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 transition"
                     >
                       {promotingId === user.id ? "Promoting..." : "Make Admin"}
                     </button>
                   ) : (
-                    <span className="text-gray-400 text-sm md:text-base">
+                    <span className="text-gray-400 text-xs sm:text-sm">
                       No action
                     </span>
                   )}
